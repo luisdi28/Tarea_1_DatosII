@@ -1,7 +1,10 @@
+#include "main.h"
 #include<iostream>
 #include<stdlib.h>
 #include<random>
 #include<fstream>
+#include <string>
+#include <bitset>
 
 using std::cout;
 using std::endl;
@@ -10,6 +13,10 @@ using std::string;
 using namespace std;
 
 int valor = 0;
+int valorb = valor;
+
+int n;
+int len;
 
 void crear_paginas(){
     int co = 6;
@@ -26,9 +33,13 @@ void crear_paginas(){
             valor = dist(eng);
             cout << to_string(valor) << ", ";
             file << to_string(valor) << ", ";
-        }
 
-        file.close();
+            std::string binary = std::bitset<8>(valor).to_string(); //to binary
+            cout << binary<<"\n";
+
+            unsigned int decimal = std::bitset<8>(binary).to_ulong();
+            cout <<decimal<<"\n";
+        }
     }
 }
 
