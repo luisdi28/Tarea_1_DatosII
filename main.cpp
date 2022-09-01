@@ -1,4 +1,3 @@
-#include "main.h"
 #include<iostream>
 #include<stdlib.h>
 #include<random>
@@ -9,40 +8,57 @@
 using std::cout;
 using std::endl;
 using std::string;
+using std::ofstream;
 
 using namespace std;
 
-int valor = 0;
-int valorb = valor;
-
-int n;
-int len;
-
 void crear_paginas(){
-    int co = 6;
-    for (int i = 1; i <= co; i++)
-    {
-        ofstream file;
-        file.open (std::to_string(i) + ".txt");
 
-        random_device rd;
-        mt19937 eng(rd());
-        uniform_int_distribution<int> dist(0, 5000);
+    int multiplicador = 1;
 
-        for (size_t i = 0; i < 256; i++) {
+    int num1 = 4;
+    int num2 = 1;
+
+    for (int cont = 1; cont < 7; cont++){
+
+        ofstream outfile ("Archivo"+ std::to_string(cont) +".txt");
+
+        for (int cantidad = 0; cantidad < 256*multiplicador; cantidad++) {
+            int valor;
+            std::random_device rd;
+            std::mt19937 eng(rd());
+            std::uniform_int_distribution<int> dist(0, 255);
             valor = dist(eng);
-            cout << to_string(valor) << ", ";
-            file << to_string(valor) << ", ";
+            if (cantidad < 255){
+                outfile << valor << ", ";
+            }
+            else{
+                outfile << valor;
+            }
 
             std::string binary = std::bitset<8>(valor).to_string(); //to binary
-            cout << binary<<"\n";
+            std::cout<<binary<<",";
 
-            unsigned int decimal = std::bitset<8>(binary).to_ulong();
-            cout <<decimal<<"\n";
+            unsigned long decimal = std::bitset<8>(binary).to_ulong();
+            std::cout<<decimal<<"\n";
+
         }
+
+        multiplicador = num2 * num1;
+        if (num2 >= 3){
+            num2+=3;
+        }
+        else{
+            num2+=1;
+        }
+
+        outfile.close();
+
     }
+
 }
 
 int main() {
+
     crear_paginas();
 }
