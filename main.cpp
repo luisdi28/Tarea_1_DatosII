@@ -27,20 +27,22 @@ void crear_paginas(){
             int valor;
             std::random_device rd;
             std::mt19937 eng(rd());
-            std::uniform_int_distribution<int> dist(0, 255);
+            std::uniform_int_distribution<int> dist(0, 120);
             valor = dist(eng);
-            if (cantidad < 255){
-                outfile << valor << ", ";
-            }
-            else{
-                outfile << valor;
-            }
+            outfile << valor << ", ";
 
             std::string binary = std::bitset<8>(valor).to_string(); //to binary
             std::cout<<binary<<",";
 
             unsigned long decimal = std::bitset<8>(binary).to_ulong();
             std::cout<<decimal<<"\n";
+
+            int int_1 = stoi(binary);
+
+            int * apuntador = &int_1;
+
+            int arr[] = {*apuntador};
+            std::cout<<arr<<"\n";
 
         }
 
