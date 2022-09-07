@@ -1,9 +1,12 @@
 #include<iostream>
+#include<stdio.h>
 #include<stdlib.h>
 #include<random>
 #include<fstream>
 #include <string>
 #include <bitset>
+
+#define PAGE_SIZE 256
 
 using std::cout;
 using std::endl;
@@ -21,7 +24,7 @@ void crear_paginas(){
 
     for (int cont = 1; cont < 7; cont++){
 
-        ofstream outfile ("Archivo"+ std::to_string(cont) +".txt");
+        ofstream outfile ("Archivo_Desordenado"+ std::to_string(cont) +".txt");
 
         for (int cantidad = 0; cantidad < 256*multiplicador; cantidad++) {
             int valor;
@@ -30,19 +33,6 @@ void crear_paginas(){
             std::uniform_int_distribution<int> dist(0, 120);
             valor = dist(eng);
             outfile << valor << ", ";
-
-            std::string binary = std::bitset<8>(valor).to_string(); //to binary
-            std::cout<<binary<<",";
-
-            unsigned long decimal = std::bitset<8>(binary).to_ulong();
-            std::cout<<decimal<<"\n";
-
-            int int_1 = stoi(binary);
-
-            int * apuntador = &int_1;
-
-            int arr[] = {*apuntador};
-            std::cout<<arr<<"\n";
 
         }
 
@@ -57,10 +47,32 @@ void crear_paginas(){
         outfile.close();
 
     }
+}
 
+void printPage(int* page, int pageSize){
+    for (int i = 0; i < pageSize; i++){
+        cout << page[i] << endl;
+    }
+}
+
+void printFile(FILE *fp){
+    int page[PAGE_SIZE];
+    int readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
+    while (readBytes > 0) {
+        cout << "Reading page" << endl;
+        printPage((int *) &page, PAGE_SIZE),
+                readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
+    }
 }
 
 int main() {
-
+    FILE *fp = fopen("binary.bin","rb");
+    if (fp == nullptr){
+        cout << "Unexpected error" << endl;
+        return 1;
+    }
+    printFile(fp);
+    fclose(fp);
+    return 0;
     crear_paginas();
 }
