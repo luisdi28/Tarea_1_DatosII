@@ -1,6 +1,5 @@
 #include<iostream>
 #include<stdio.h>
-#include<stdlib.h>
 #include<random>
 #include<fstream>
 #include <string>
@@ -15,7 +14,9 @@ using std::ofstream;
 
 using namespace std;
 
-void crear_paginas(){
+int* a;
+
+int crear_paginas(){
 
     int multiplicador = 1;
 
@@ -32,8 +33,30 @@ void crear_paginas(){
             std::mt19937 eng(rd());
             std::uniform_int_distribution<int> dist(0, 120);
             valor = dist(eng);
+
             outfile << valor << ", ";
 
+            a = &valor;
+
+            FILE *fp;
+            fp = fopen("binary.bin", "wb+");
+            if (fp != nullptr){
+                for (int i = 0; i < 256; i++){
+                    fwrite (a, sizeof(int),1,fp);
+                }
+                fseek(fp,0,SEEK_SET);
+                int buffer[256];
+                int readBytes = fread(&buffer, sizeof(int), 256,fp);
+                cout << "Bytes read:" << readBytes << endl;
+
+                fclose(fp);
+                if (readBytes <= 0){
+                    return 1;
+                }
+                for (int i = 0; i < 256; i++){
+                    cout << buffer[i] << endl;
+                }
+            }
         }
 
         multiplicador = num2 * num1;
@@ -55,18 +78,19 @@ void printPage(int* page, int pageSize){
     }
 }
 
-void printFile(FILE *fp){
+void printFile(FILE *fp) {
     int page[PAGE_SIZE];
     int readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
     while (readBytes > 0) {
         cout << "Reading page" << endl;
-        printPage((int *) &page, PAGE_SIZE),
-                readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
+        printPage((int *) &page, PAGE_SIZE);
+        readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
     }
 }
 
 int main() {
-    FILE *fp = fopen("binary.bin","rb");
+    crear_paginas();
+    FILE *fp = fopen("binary.bin", "wb+");
     if (fp == nullptr){
         cout << "Unexpected error" << endl;
         return 1;
@@ -74,5 +98,4 @@ int main() {
     printFile(fp);
     fclose(fp);
     return 0;
-    crear_paginas();
 }
