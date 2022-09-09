@@ -1,5 +1,6 @@
 #include<iostream>
 #include<stdio.h>
+#include<stdlib.h>
 #include<random>
 #include<fstream>
 #include <string>
@@ -90,12 +91,4 @@ void printFile(FILE *fp) {
 
 int main() {
     crear_paginas();
-    FILE *fp = fopen("binary.bin", "wb+");
-    if (fp == nullptr){
-        cout << "Unexpected error" << endl;
-        return 1;
-    }
-    printFile(fp);
-    fclose(fp);
-    return 0;
 }
