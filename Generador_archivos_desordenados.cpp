@@ -1,8 +1,10 @@
 #include<iostream>
+#include<stdio.h>
 #include<random>
 #include<fstream>
 #include <string>
-#include <stdio.h>
+#include <bitset>
+
 #define PAGE_SIZE 256
 
 using std::cout;
@@ -12,42 +14,49 @@ using std::ofstream;
 
 using namespace std;
 
-void crea_archivos_binarios() {
-    int multiplicador_b = 1;
+int* a;
 
-    int num1_b = 4;
-    int num2_b = 1;
-
-    for (int cont = 1; cont < 7; cont++) {
-
-        FILE *fp = fopen("Archivo_Desordenado1.bin", "r");
-    }
-}
 int crear_paginas(){
 
     int multiplicador = 1;
 
     int num1 = 4;
     int num2 = 1;
-    int valor;
-
 
     for (int cont = 1; cont < 7; cont++){
 
         ofstream outfile ("Archivo_Desordenado"+ std::to_string(cont) +".txt");
 
-
         for (int cantidad = 0; cantidad < 256*multiplicador; cantidad++) {
-
+            int valor;
             std::random_device rd;
             std::mt19937 eng(rd());
             std::uniform_int_distribution<int> dist(0, 120);
-
             valor = dist(eng);
 
             outfile << valor << ", ";
 
+            a = &valor;
 
+            FILE *fp;
+            fp = fopen("binary.bin", "wb+");
+            if (fp != nullptr){
+                for (int i = 0; i < 256; i++){
+                    fwrite (a, sizeof(int),1,fp);
+                }
+                fseek(fp,0,SEEK_SET);
+                int buffer[256];
+                int readBytes = fread(&buffer, sizeof(int), 256,fp);
+                cout << "Bytes read:" << readBytes << endl;
+
+                fclose(fp);
+                if (readBytes <= 0){
+                    return 1;
+                }
+                for (int i = 0; i < 256; i++){
+                    cout << buffer[i] << endl;
+                }
+            }
         }
 
         multiplicador = num2 * num1;
@@ -61,7 +70,6 @@ int crear_paginas(){
         outfile.close();
 
     }
-    crea_archivos_binarios();
 }
 
 void printPage(int* page, int pageSize){
@@ -80,6 +88,14 @@ void printFile(FILE *fp) {
     }
 }
 
-int main(){
+int main() {
     crear_paginas();
+    FILE *fp = fopen("binary.bin", "wb+");
+    if (fp == nullptr){
+        cout << "Unexpected error" << endl;
+        return 1;
+    }
+    printFile(fp);
+    fclose(fp);
+    return 0;
 }
