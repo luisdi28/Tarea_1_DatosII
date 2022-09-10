@@ -1,0 +1,16 @@
+//
+// Created by luis on 29/08/22.
+//
+
+#ifndef TAREA_1_DATOSII_GENERADOR_ARCHIVOS_DESORDENADOS_H
+#define TAREA_1_DATOSII_GENERADOR_ARCHIVOS_DESORDENADOS_H
+
+
+
+class Generador_archivos_desordenados {
+
+
+};
+
+
+#endif //TAREA_1_DATOSII_GENERADOR_ARCHIVOS_DESORDENADOS_H
