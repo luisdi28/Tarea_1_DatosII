@@ -3,4 +3,4 @@ project(Tarea_1_DatosII)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Tarea_1_DatosII Generador_archivos_desordenados.cpp)
+add_executable(Tarea_1_DatosII Main.cpp)
