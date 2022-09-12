@@ -2,116 +2,158 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <bitset>
+#include <cstring>
 
 #define PAGE_SIZE 256
 
 using namespace std;
 
-void printPage(int* page, int pageSize) {
-    for (int i = 0; i < pageSize; i++) {
-        cout << page[i] << endl;
-    }
-}
-void printFile(FILE *fp) {
-    int page[PAGE_SIZE];
-    int readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
-    while (readBytes > 0) {
-        cout << "Reading page..." << endl;
-        printPage(page, PAGE_SIZE);
-        readBytes = fread(&page, sizeof(int), PAGE_SIZE, fp);
-    }
-}
+int partition(int arr[], int start, int end){
 
-void initRandomGenerator() {
-    srand(time(0));
-}
-void generateFile(int size) {
-
-    int multiplicador = 1;
-
-    int num1 = 4;
-    int num2 = 1;
-
-    for (int cont = 1; cont < 7; cont++) {
-        for (int cantidad = 0; cantidad < 256 * multiplicador; cantidad++) {
-            FILE *binaryFile = fopen("binary.bin", "wb+");
-            FILE *regularFile = fopen("regular.txt", "w+");
-            int intCount = size / sizeof(int);
-            for (int i = 0; i < intCount; i++) {
-                int newValue = rand();
-                std::string newValueStr = to_string(newValue).append(",");
-                fwrite(&newValue, sizeof(int), 1, binaryFile);
-                fwrite(newValueStr.data(), newValueStr.length(), 1, regularFile);
-            }
-
-            fclose(regularFile);
-            fclose(binaryFile);
-
-        }
-        multiplicador = num2 * num1;
-        if (num2 >= 3) {
-            num2 += 3;
-        } else {
-            num2 += 1;
-        }
-    }
-}
-
-int partition(int page[], int start, int end){
-
-    int pivot = page[start];
+    int pivot = arr[start];
 
     int count = 0;
     for (int i = start + 1; i <= end; i++) {
-        if (page[i] <= pivot)
+        if (arr[i] <= pivot)
             count++;
     }
 
     int pivotIndex = start + count;
-    swap(page[pivotIndex], page[start]);
+    swap(arr[pivotIndex], arr[start]);
 
     int i = start, j = end;
 
     while (i < pivotIndex && j > pivotIndex) {
 
-        while (page[i] <= pivot) {
+        while (arr[i] <= pivot) {
             i++;
         }
 
-        while (page[j] > pivot) {
+        while (arr[j] > pivot) {
             j--;
         }
 
         if (i < pivotIndex && j > pivotIndex) {
-            swap(page[i++], page[j--]);
+            swap(arr[i++], arr[j--]);
         }
     }
 
     return pivotIndex;
 }
 
-void quickSort(int page[], int start, int end)
-{
+void quickSort(int arr[], int start, int end) {
 
     if (start >= end)
         return;
 
-    int p = partition(page, start, end);
+    int p = partition(arr, start, end);
 
-    quickSort(page, start, p - 1);
+    quickSort(arr, start, p - 1);
 
-    quickSort(page, p + 1, end);
+    quickSort(arr, p + 1, end);
+
+    FILE *regularFile = fopen("Archivo_ordenado_QS.txt", "w+");
+    for (int i = 0; i < 256; i++) {
+        std::string newValueOrdered = to_string(arr[i]).append(",");
+        fwrite(newValueOrdered.data(), newValueOrdered.length(), 1, regularFile);
+    }
+    fclose(regularFile);
+
 }
 
-int main() {
-    initRandomGenerator();
-    //quitar esto cuando se solucione lo del nombre del archivo
-    generateFile(1024);
-    FILE *fp = fopen("binary.bin", "rb+");
-    if (fp == nullptr){
-        cout << "Unexpected error" << endl;
-        return 1;
+void swap(int *xp, int *yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+void selectionSort(int arr[], int n)
+{
+    int i, j, min_idx;
+
+    for (i = 0; i < n-1; i++)
+    {
+        min_idx = i;
+        for (j = i+1; j < n; j++)
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+
+        if(min_idx!=i)
+            swap(&arr[min_idx], &arr[i]);
     }
-    printFile(fp);
+    FILE *regularFile = fopen("Archivo_ordenado_SS.txt", "w+");
+    for (int i = 0; i < 256; i++) {
+        std::string newValueOrdered = to_string(arr[i]).append(",");
+        fwrite(newValueOrdered.data(), newValueOrdered.length(), 1, regularFile);
+    }
+    fclose(regularFile);
+}
+
+void insertionSort(int arr[], int nElements)
+{
+    int x, key, y;
+    for (x = 1; x < nElements; x++)
+    {
+        key = arr[x];
+        y = x - 1;
+        while (y >= 0 && arr[y] > key)
+        {
+            arr[y + 1] = arr[y];
+            y = y - 1;
+        }
+        arr[y + 1] = key;
+    }
+    FILE *regularFile = fopen("Archivo_ordenado_IS.txt", "w+");
+    for (int i = 0; i < 256; i++) {
+        std::string newValueOrdered = to_string(arr[i]).append(",");
+        fwrite(newValueOrdered.data(), newValueOrdered.length(), 1, regularFile);
+    }
+    fclose(regularFile);
+}
+
+void initRandomGenerator() {
+    srand(time(0));
+}
+int* generateFile() {
+
+    static int arr[256];
+    for (int cantidad = 0; cantidad < 256; cantidad++) {
+        FILE *binaryFile = fopen("Archivo_binario.bin", "wb+");
+        FILE *regularFile = fopen("Archivo_desordenado.txt", "w+");
+
+        for (int i = 0; i < 256; i++) {
+            int newValue = rand();
+            std::string newValueStr = to_string(newValue).append(",");
+            fwrite(&newValue, sizeof(int), 1, binaryFile);
+            fwrite(newValueStr.data(), newValueStr.length(), 1, regularFile);
+
+            arr[cantidad] = newValue;
+
+        }
+        fclose(regularFile);
+        fclose(binaryFile);
+    }
+    return arr;
+
+}
+
+
+int main(int argc, char ** argv) {
+
+    initRandomGenerator();
+    if ( strcmp(argv[1], "QS") == 0 ){
+        int* ptr = generateFile();
+        quickSort(ptr,0,255);
+    }
+    else if ( strcmp(argv[1], "SS") == 0 ){
+        int* ptr = generateFile();
+        selectionSort(ptr,256);
+    }
+    else{
+        int* ptr = generateFile();
+        insertionSort(ptr,256);
+    }
     return 0;
 }
